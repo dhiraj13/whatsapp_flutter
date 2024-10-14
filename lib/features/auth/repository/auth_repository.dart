@@ -28,7 +28,8 @@ class AuthRepository {
   });
 
   Future<UserModel?> getCurrentUserData() async {
-    var userData = await firestore.collection('users').doc(auth.currentUser?.uid).get();
+    var userData =
+        await firestore.collection('users').doc(auth.currentUser?.uid).get();
 
     UserModel? user;
     if (userData.data() != null) {
@@ -106,7 +107,7 @@ class AuthRepository {
         uid: uid,
         profilePic: photoUrl,
         isOnline: true,
-        phoneNumber: auth.currentUser!.uid,
+        phoneNumber: auth.currentUser!.phoneNumber!,
         groupId: [],
       );
 
