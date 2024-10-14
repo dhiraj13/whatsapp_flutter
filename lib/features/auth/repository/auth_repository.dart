@@ -58,7 +58,9 @@ class AuthRepository {
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context: context, content: e.message!);
+      if (context.mounted) {
+        showSnackBar(context: context, content: e.message!);
+      }
     }
   }
 
@@ -73,13 +75,17 @@ class AuthRepository {
         smsCode: userOTP,
       );
       await auth.signInWithCredential(credential);
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        UserInformationScreen.routeName,
-        (route) => false,
-      );
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          UserInformationScreen.routeName,
+          (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context: context, content: e.message!);
+      if (context.mounted) {
+        showSnackBar(context: context, content: e.message!);
+      }
     }
   }
 
@@ -113,15 +119,27 @@ class AuthRepository {
 
       await firestore.collection('users').doc(uid).set(user.toMap());
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MobileLayoutScreen(),
-        ),
-        (route) => false,
-      );
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MobileLayoutScreen(),
+          ),
+          (route) => false,
+        );
+      }
     } catch (e) {
-      showSnackBar(context: context, content: e.toString());
+      if (context.mounted) {
+        showSnackBar(context: context, content: e.toString());
+      }
     }
+  }
+
+  Stream<UserModel> userData(String userId) {
+    return firestore.collection('users').doc(userId).snapshots().map(
+          (event) => UserModel.fromMap(
+            event.data()!,
+          ),
+        );
   }
 }
